@@ -1,15 +1,18 @@
-import { getRepository, MigrationInterface, QueryRunner } from 'typeorm';
-import { Answer } from '../entity/Answer';
-import { Category } from '../entity/Category';
-import { Question } from '../entity/Question';
-import { categoriesList } from '../fixture/CategoriesList';
-import IQuestionAndAnswers from '../types/questionAndAnswer';
-import axios from 'axios';
+import { getRepository, MigrationInterface, QueryRunner } from "typeorm";
+import { Answer } from "../entity/Answer";
+import { Category } from "../entity/Category";
+import { Question } from "../entity/Question";
+import { categoriesList } from "../fixture/CategoriesList";
+import IQuestionAndAnswers from "../types/questionAndAnswer";
+import axios from "axios";
+
 const APIKEY: string = process.env.APIKEY!;
 
 export class InitQuestions1630574105254 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const catList = await queryRunner.connection.getRepository(Category).save(categoriesList);
+    const catList = await queryRunner.connection
+      .getRepository(Category)
+      .save(categoriesList);
 
     const questionsList: Question[] = [];
     for (let i = 0; i < 6; ++i) {
@@ -48,25 +51,26 @@ export class InitQuestions1630574105254 implements MigrationInterface {
   }
 
   private createQuestion = (questionAndAnswers: IQuestionAndAnswers) => {
-    if (!this.isValidQuestion(questionAndAnswers)) return;
+    if (!InitQuestions1630574105254.isValidQuestion(questionAndAnswers)) return;
 
     // The API has categories in its questions, that return an empty object when explicitly asking for questions in that category.
     // For example, some questions are marked with "HTML" as a category but when requesting "HTML" questions the API returns null.
     // The categories in our list have been tested when sent as a parameter to the API.
-    const category = categoriesList.find((cat) => cat.name === questionAndAnswers.category);
+    const category = categoriesList.find(
+      (cat) => cat.name === questionAndAnswers.category
+    );
     if (category === undefined) return;
 
     const answers = this.createAnswers(questionAndAnswers);
 
-    const question = new Question(
+    return new Question(
       questionAndAnswers.question,
       answers,
       category,
       answers.find((elem) => {
         elem.isCorrect == true;
-      }) as Answer,
+      }) as Answer
     );
-    return question;
   };
 
   private createAnswers = (questionAndAnswers: IQuestionAndAnswers) => {
@@ -77,8 +81,10 @@ export class InitQuestions1630574105254 implements MigrationInterface {
     for (k in questionAndAnswers.answers) {
       const answerText: string | undefined = questionAndAnswers.answers[k];
       if (answerText != null) {
-        const answerKey = `${k}_correct` as keyof typeof questionAndAnswers.correct_answers; // #JustTypescriptThings
-        const isCorrect: boolean = questionAndAnswers.correct_answers[answerKey] === 'true';
+        const answerKey =
+          `${k}_correct` as keyof typeof questionAndAnswers.correct_answers; // #JustTypescriptThings
+        const isCorrect: boolean =
+          questionAndAnswers.correct_answers[answerKey] === "true";
         const obj: Answer = new Answer(answerText, isCorrect);
         answers.push(obj);
       }
@@ -86,16 +92,17 @@ export class InitQuestions1630574105254 implements MigrationInterface {
     return answers;
   };
 
-  private isValidQuestion(questionAndAnswers: IQuestionAndAnswers) {
+  private static isValidQuestion(questionAndAnswers: IQuestionAndAnswers) {
     // We want to exclude questions with multiple correct answers...
-    if (questionAndAnswers.multiple_correct_answers === 'true') return false;
+    if (questionAndAnswers.multiple_correct_answers === "true") return false;
 
     // ... or no correct answers;
     let k: keyof typeof questionAndAnswers.correct_answers;
     let correctAnswerIndex: number = 0;
     for (k in questionAndAnswers.correct_answers) {
-      const answerText: string | undefined = questionAndAnswers.correct_answers[k];
-      if (answerText === 'true') break;
+      const answerText: string | undefined =
+        questionAndAnswers.correct_answers[k];
+      if (answerText === "true") break;
       correctAnswerIndex = correctAnswerIndex + 1;
     }
     if (correctAnswerIndex >= 6) return false; // Six entries in the "correct_answers" object, regardless of the number of answers

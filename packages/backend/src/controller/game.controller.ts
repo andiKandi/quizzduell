@@ -86,7 +86,7 @@ export const createGame: RequestHandler<{}, CreateGame> = async (req: Request, r
   newGame.rounds = [];
 
   for (let i = 0; i < 4; i++) {
-    const round = new Round(i + 1, i === 0 ? true : false, newGame, '', i % 2 === 0 ? true : false);
+    const round = new Round(i + 1, i === 0, newGame, '', i % 2 === 0);
     newGame.rounds.push(round);
   }
 
@@ -214,8 +214,8 @@ const determineRoundWinner = (round: Round, creatorId: string, opponentId: strin
   let countCorrectCreator: number = 0;
   let countCorrectOpponent: number = 0;
   round.gameQuestions?.forEach((gq) => {
-    gq.answerCreator.isCorrect === true && ++countCorrectCreator;
-    gq.answerOpponent.isCorrect === true && ++countCorrectOpponent;
+    gq.answerCreator.isCorrect && ++countCorrectCreator;
+    gq.answerOpponent.isCorrect && ++countCorrectOpponent;
   });
 
   countCorrectCreator === countCorrectOpponent
@@ -258,7 +258,7 @@ const determineWinner = async (game: Game): Promise<string> => {
   let roundsWonCreator: number = 0;
   let roundsWonOpponent: number = 0;
 
-  let winnerId: string = '';
+  let winnerId: string;
 
   const rounds = await roundRepo.find({
     where: {

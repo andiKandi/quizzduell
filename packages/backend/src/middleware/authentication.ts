@@ -1,6 +1,6 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import { Request, Response, NextFunction } from 'express';
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import { NextFunction, Request, Response } from "express";
 
 export interface JWTUserData {
   email: string;
@@ -14,7 +14,7 @@ export interface JWTToken extends JWTUserData {
 }
 
 export class Authentication {
-  private static SECRET_KEY = 'JWT_SECRET';
+  private static SECRET_KEY = "JWT_SECRET";
   private static JWT_OPTIONS: jwt.SignOptions = {
     expiresIn: 3600, // in seconds
   };
@@ -24,7 +24,9 @@ export class Authentication {
     return jwt.sign(userdata, this.SECRET_KEY, this.JWT_OPTIONS);
   }
 
-  public static async verifyToken(token: string): Promise<string | object | null> {
+  public static async verifyToken(
+    token: string
+  ): Promise<string | object | null> {
     try {
       return jwt.verify(token, this.SECRET_KEY);
     } catch (e) {
@@ -38,25 +40,28 @@ export class Authentication {
 
   public static async comparePasswordWithHash(password: string, hash: string) {
     try {
-      const match: boolean = await bcrypt.compare(password, hash);
-      return match;
+      return await bcrypt.compare(password, hash);
     } catch (e) {
       return false;
     }
   }
 
-  public static async verifyAccess(req: Request, res: Response, next: NextFunction) {
-    const jwt = req.get('Authorization');
+  public static async verifyAccess(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const jwt = req.get("Authorization");
 
     // Check if the authorization header exists
     if (!jwt) {
-      return res.status(401).send({ status: 'unauthorized' });
+      return res.status(401).send({ status: "unauthorized" });
     }
 
     // Verify the token. Returns the jwt object if valid - else null
     const validToken = await Authentication.verifyToken(jwt);
     if (!validToken) {
-      return res.status(401).send({ status: 'unauthorized' });
+      return res.status(401).send({ status: "unauthorized" });
     }
 
     return next();
@@ -67,13 +72,13 @@ export const authMiddleware = async (
   req: Request,
   // tslint:disable-next-line: variable-name
   _res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
-  const token = req.get('Authorization');
+  const token = req.get("Authorization");
   if (token) {
     try {
-      const decodedToken = (await Authentication.verifyToken(token)) as JWTToken;
-      req.token = decodedToken;
+      // decoded Token
+      req.token = (await Authentication.verifyToken(token)) as JWTToken;
     } catch (e) {
       console.log(e);
     }

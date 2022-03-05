@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
-import { getRepository } from 'typeorm';
-import { Game } from '../entity/Game';
-import { MatchMaking } from '../entity/MatchMaking';
-import { Player } from '../entity/Player';
-import { Round } from '../entity/Round';
+import { Request, Response } from "express";
+import { getRepository } from "typeorm";
+import { Game } from "../entity/Game";
+import { MatchMaking } from "../entity/MatchMaking";
+import { Player } from "../entity/Player";
+import { Round } from "../entity/Round";
 
 type MatchMakingResponse = {
   opponentId: string;
@@ -16,7 +16,11 @@ export const getRandomPlayer = async (req: Request, res: Response) => {
     const matchMakingRepository = await getRepository(MatchMaking);
     const playerRepository = await getRepository(Player);
 
-    const randomPlayer = await matchMakingRepository.createQueryBuilder('player').orderBy('RAND()').limit(1).getOne();
+    const randomPlayer = await matchMakingRepository
+      .createQueryBuilder("player")
+      .orderBy("RAND()")
+      .limit(1)
+      .getOne();
 
     if (!randomPlayer) {
       const newMatch = new MatchMaking();
@@ -29,12 +33,14 @@ export const getRandomPlayer = async (req: Request, res: Response) => {
     {
       const newGame = new Game();
       newGame.opponent = (await playerRepository.findOne(playerId)) as Player;
-      newGame.creator = (await playerRepository.findOne(randomPlayer.playerId)) as Player;
+      newGame.creator = (await playerRepository.findOne(
+        randomPlayer.playerId
+      )) as Player;
 
       newGame.rounds = [];
 
       for (let i = 0; i < 4; i++) {
-        const round = new Round(i + 1, i === 0 ? true : false, newGame, '', i % 2 === 0 ? true : false);
+        const round = new Round(i + 1, i === 0, newGame, "", i % 2 === 0);
         newGame.rounds.push(round);
       }
 
@@ -52,26 +58,26 @@ export const getRandomPlayer = async (req: Request, res: Response) => {
     }
   } catch (error) {
     return res.status(400).send({
-      status: 'bad_request',
+      status: "bad_request",
     });
   }
 };
 
 export const checkState = async (req: Request, res: Response) => {
   const playerId = req.params.id;
-  let state = '';
+  let state = "";
   try {
     const matchMakingRepository = await getRepository(MatchMaking);
 
     const player = await matchMakingRepository
-      .createQueryBuilder('match')
-      .where('playerId = :playerId', { playerId })
+      .createQueryBuilder("match")
+      .where("playerId = :playerId", { playerId })
       .getOne();
 
     if (player) {
-      state = 'not_yet';
+      state = "not_yet";
     } else {
-      state = 'found';
+      state = "found";
     }
 
     return res.status(201).send({
@@ -79,7 +85,7 @@ export const checkState = async (req: Request, res: Response) => {
     });
   } catch (error) {
     return res.status(400).send({
-      status: 'bad_request',
+      status: "bad_request",
     });
   }
 };
@@ -89,17 +95,17 @@ export const deleteMatchMaking = async (req: Request, res: Response) => {
   try {
     const matchMakingRepository = await getRepository(MatchMaking);
     await matchMakingRepository
-      .createQueryBuilder('match')
+      .createQueryBuilder("match")
       .delete()
-      .where('playerId = :playerId', { playerId })
+      .where("playerId = :playerId", { playerId })
       .execute();
 
     return res.status(201).send({
-      status: 'OK',
+      status: "OK",
     });
   } catch (error) {
     return res.status(400).send({
-      status: 'bad_request',
+      status: "bad_request",
     });
   }
 };

@@ -15,7 +15,6 @@ import { theme } from '../theme';
 export const TextButton = styled.button`
   all: unset;
   color: ${(props) => props.theme.colors.primary};
-  pointer: click;
   cursor: pointer;
   margin: 1em;
 `;

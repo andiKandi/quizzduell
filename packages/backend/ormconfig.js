@@ -1,6 +1,6 @@
 const { resolve } = require("path");
 const prefix = (path) => {
-  let prefix = null;
+  let prefix;
   switch (process.env.NODE_ENV) {
     // ts-jest registers ts-node
     case "test":

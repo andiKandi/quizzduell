@@ -8,7 +8,7 @@ export const GlobalStyle = createGlobalStyle`
     body,html {
         color:${(props) => props.theme.colors.fontColor};
         background-color:${(props) => props.theme.colors.backgroundColor};
-        font-family:'Arial';
+        font-family:'Arial',sans-serif;
         margin:0;
         padding:0;
         height: 100%;

@@ -1,17 +1,22 @@
-import { ConnectionOptions, createConnection, getConnectionOptions } from 'typeorm';
+import {
+  ConnectionOptions,
+  createConnection,
+  getConnectionOptions,
+} from "typeorm";
 
 /**
  * Connects to our database, retrying up to five times and logging failed
  * connection attempts.
  */
-export const createDatabaseConnection = async (configOverride: Partial<ConnectionOptions> = {}) => {
+export const createDatabaseConnection = async (
+  configOverride: Partial<ConnectionOptions> = {}
+) => {
   let retries = 5;
   while (retries) {
     try {
-      const config = await getConnectionOptions('default');
+      const config = await getConnectionOptions("default");
       // tslint:disable-next-line: prefer-object-spread
-      const connection = await createConnection(Object.assign({}, config, configOverride));
-      return connection;
+      return await createConnection(Object.assign({}, config, configOverride));
     } catch (err) {
       retries -= 1;
       console.log(`DB-Connection failed. Retries left: ${retries}.`, err);
@@ -20,5 +25,5 @@ export const createDatabaseConnection = async (configOverride: Partial<Connectio
     }
   }
 
-  throw new Error('Could not establish a database connection!');
+  throw new Error("Could not establish a database connection!");
 };
