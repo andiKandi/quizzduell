@@ -1,0 +1,35 @@
+version: "3.7"
+services:
+  db:
+    image: mysql:5.7
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456789
+      - MYSQL_DATABASE=quizzduel-db
+      - MYSQL_USER=quizzduel-user
+      - MYSQL_PASSWORD=123456789
+    ports:
+      - "3306:3306"
+
+  backend:
+    image: node:15
+    working_dir: /var/app/backend
+    ports:
+      - 4000:4000
+      - 9229:9229
+    command: npm start
+    volumes:
+      - ./packages/backend:/var/app/backend
+
+  frontend:
+    image: node:15
+    working_dir: /var/app/frontend
+    ports:
+      - 3000:3000
+    command: npm start
+    stdin_open: true
+    volumes:
+      - ./packages/frontend:/var/app/frontend

@@ -1,0 +1,16 @@
+entity: Player
+items:
+  devUser:
+    email: "dev@fwe.de"
+    # 123456 in bcrypt
+    password: "$2b$10$JIiWfJjvgEKCgn4w/decr.Mz.dhzkcSN/4wAHfCloaqBYzLuPmsUO"
+    name: "FWE TestAcount"
+    eloRanking: 0
+    icon: "user"
+  testUser:
+    email: "andi@gmail.com"
+    # 123456 in bcrypt
+    password: "$2b$10$JIiWfJjvgEKCgn4w/decr.Mz.dhzkcSN/4wAHfCloaqBYzLuPmsUO"
+    name: "Andi"
+    eloRanking: 0
+    icon: "user"

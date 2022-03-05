@@ -1,0 +1,24 @@
+.pro-sidebar .pro-menu .pro-menu-item.pro-sub-menu .pro-inner-list-item .pro-inner-item:before {
+    content: unset;
+    background-color: #202020
+}
+
+.pro-sidebar .pro-menu .pro-menu-item.pro-sub-menu .pro-inner-list-item .pro-inner-item {
+     padding: 8px 0 8px 0;
+ }
+
+.pro-sidebar .pro-menu .pro-menu-item > .pro-inner-item > .pro-item-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: unset;
+    min-width: 100px;
+    max-width: 150px;
+}
+
+.pro-sidebar .pro-menu .pro-menu-item.pro-sub-menu .pro-inner-list-item {
+    padding-left: unset;
+}
+
+.pro-sidebar {
+    min-width: 33em;
+}
